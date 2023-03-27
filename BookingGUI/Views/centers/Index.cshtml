@@ -1,0 +1,75 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @using BookingGUI.Models;
+    @model IEnumerable<Center>;
+}
+
+
+<div id="tableview">
+    <h3>Search For a Center</h3>
+    <form>
+        <input type="search" id="Searchtxt" onkeyup="onkeyupEvent()" placeholder="Search Center.." />
+
+    </form>
+    <table width="100px" height="100px" class="table" > 
+        <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Location</th>
+        
+        </tr>
+
+        @foreach (var center in Model)
+        {
+            <tr>
+                <td>@center.Id</td>
+                <td id="center#currentRow#">@center.Name</td>
+                <td>@center.location</td>
+                <td><button onclick="sendName('@center.Name')">Book Center</button></td>
+            </tr>
+        }
+    </table>
+</div>
+
+
+<script >
+    function onkeyupEvent() 
+    {
+        $('#Searchtxt').keyup( function () {
+
+            var searchmap = $(this).val();
+             $("table tr").each(function (result){
+                if (result !==0)
+                {  
+                    var id = $(this).find("td:nth-child(2)").text();
+                     if (id.indexOf(searchmap) !== 0 && id.toLowerCase().indexOf(searchmap.toLowerCase())<0)
+                     {
+                        $(this).hide();
+                     }
+                    else 
+                    {
+                        $(this).show();
+                    }
+
+                }
+             });
+
+        });
+    }
+
+    function sendName(name)
+    {
+        //var center = document.getElementById('center').textContent;
+        //localStorage.setItem("centerName", center);
+        
+        
+
+        var a = name;
+        localStorage.setItem("myValue", a);
+        window.location.href = "/Bookings";
+    }
+
+
+</script>

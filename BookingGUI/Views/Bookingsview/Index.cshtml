@@ -1,0 +1,93 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div id="studentForm">
+
+
+
+    <form>
+
+
+
+
+
+        <input type="text" id="cname" name="cname" readonly placeholder="Center Name" />
+    </form>
+    <button id="search" onclick="search()">view Bookings</button>
+   <a href="/AdminCenter"> <button>view centers</button> </a>
+    <div id="container"></div>
+</div>
+<script>
+        window.onload = getName();
+
+        function search() 
+        {
+
+            var search = $('#cname').val();
+            alert(search);
+            $.ajax({
+                url: '/Bookingsview/Searchbyname/',
+                type: 'GET',
+                dataType: 'JSON',
+                data: {name: search },
+                success: function (data, textStatus, xhr) {
+
+              
+                    // (C) CREATE HTML TABLE
+                    // (C1) HTML TABLE STRING
+                    var myTable = "<table><tr>";
+
+                    myTable += `<th>Customer Name</th>`;
+                    myTable += `<th>Center Name</th>`;
+                    myTable += `<th>Start Date</th>`;
+                    myTable += `<th>End Date</th>`;
+                    myTable += "</tr>"
+                    myTable += "<tr>"
+
+                    // (C2) LOOP THROUGH ARRAY & GENERATE ROWS-CELLS
+                    var perrow = 1; // 2 CELLS PER ROW
+                    data.forEach((value, i) => {
+                        // "NORMAL" CELL
+                    //myTable += `<td>${value.Id}</td>`;
+                    myTable += `<td>${value.customerName}</td>`;
+                    myTable += `<td>${value.centerName}</td>`;
+                    var startDate1 = value.startDate.split(' ')[0]
+                    
+                    myTable += `<td>${startDate1}</td>`;
+                    myTable += `<td>${value.endDate}</td>`;
+
+                        var next = i + 1;
+                        if (next % perrow == 0 && next != data.length) { myTable += "</tr><tr>"; }
+                    });
+
+                    // (C3) CLOSE THE TABLE STRING
+                    myTable += "</tr></table>";
+
+                    // (D) ATTACH HTML TO CONTAINER
+                    document.getElementById("container").innerHTML = myTable;
+
+
+
+
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
+        }
+        function getName() {
+
+            var b = localStorage.getItem("myValue");
+            //alert("The Value Received is " + b);
+            document.getElementById('cname').value = b;
+            var resetValue = 0;
+            localStorage.setItem("myValue", resetValue);
+
+
+        }
+
+</script>

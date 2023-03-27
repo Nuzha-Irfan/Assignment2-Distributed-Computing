@@ -1,0 +1,68 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+    @using BookingGUI.Models;
+    @model IEnumerable<Center>;
+}
+
+<div id="tableview">
+    <table width="100px" height="100px" class="table">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Location</th>
+
+        </tr>
+
+        @foreach (var center in Model)
+        {
+            <tr>
+                <td>@center.Id</td>
+                <td>@center.Name</td>
+                <td>@center.location</td>
+                <td><button onclick="sendID('@center.Id')"> Edit</button></td>
+                <td><button onclick="deleteid('@center.Id')"> Delete</button></td>
+                <td><button onclick="sendName('@center.Name')"> view Bookings</button></td>
+            </tr>
+        }
+    </table>
+    <a href="/centerManage"><button>+ Add Center</button></a>
+</div>
+
+<script>
+    function sendName(name) {
+       
+
+        var a = name;
+        localStorage.setItem("myValue", a);
+        window.location.href = "/Bookingsview";
+    }
+
+
+    function deleteid(id) {
+        $.ajax({
+            url: "/AdminCenter/Delete/" + id,
+            type: "DELETE", // <- Change here
+            contentType: "application/json",
+            success: function () {
+                alert("Deleted successfully.");
+                window.location.href = "/AdminCenter";
+            },
+            error: function () {
+                alert("Could Not Be Deleted");
+            }
+        });
+    }
+
+    function sendID(id) {
+
+
+        var a = id;
+        localStorage.setItem("myValue", a);
+        window.location.href = "/updateCenter";
+    }
+
+</script>
+

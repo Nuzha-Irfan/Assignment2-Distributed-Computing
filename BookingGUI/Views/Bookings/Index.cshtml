@@ -1,0 +1,223 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<!DOCTYPE html>
+
+<div id="studentForm">
+
+    
+    <form>
+
+        <h1>Book a Center </h1>
+        
+       
+       <input type="text" id="cname" name="cname"  readonly placeholder="Center Name"/>
+       <input type="text" id="cusname" name="cusname" placeholder="Customer Name"/>
+       <input type="date" id="startDate" name="startDate"  placeholder="Start Date" required/>
+        
+        <script language="javascript">
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        var yyyy = today.getFullYear();
+
+        today = yyyy + '-' + mm + '-' + dd;
+            document.getElementById("startDate").setAttribute("min", today);
+        </script>
+        <input type="date" id="endDate" name="endDate"  placeholder="End Date" required/>
+        <script language="javascript">
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0');
+            var yyyy = today.getFullYear();
+
+            today = yyyy + '-' + mm + '-' + dd;
+            document.getElementById("endDate").setAttribute("min", today);
+        </script>
+     
+
+       
+
+        
+
+    </form>
+    <button id="addBooking" onclick="addBooking()">Confirm Booking</button>
+    <button id="search" onclick="search()">view Bookings</button>
+    <div id="container"></div>
+</div>
+
+
+<script>
+
+    window.onload = getName();
+    
+    var disabledDates;
+    function addBooking() 
+    {
+      
+        var startDate = document.getElementById("startDate").value;
+        var endDate = document.getElementById("endDate").value;
+
+        for (let i = 0; i < disabledDates.length; i++) {
+            if (disabledDates[i] == startDate) {
+                alert("The Start Date has already been booked")
+                document.getElementById("startDate").value = " ";
+                break;
+            }
+            else if (disabledDates[i] == endDate) {
+
+
+                alert("The End  Date has already been booked")
+                document.getElementById("endDate").value = " ";
+                break;
+
+            }
+
+
+        }
+
+        if ((Date.parse(startDate) >= Date.parse(endDate))) {
+            alert("End date should be greater than Start date");
+            document.getElementById("endDate").value = "";
+            
+        }
+        else if (document.getElementById("startDate").value = "") {
+            alert ("please select a start Date");
+        }
+        else if (document.getElementById("endDate").value = "") {
+            alert("please select a end Date");
+        }
+        else 
+        {
+         
+         
+            
+         
+
+                var booking = new Object();
+                booking.customerName = $('#cusname').val();
+                booking.centerName = $("#cname").val();
+                booking.startDate = $("#startDate").val();
+                booking.endDate = $("#endDate").val();
+
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Bookings/AddBooking/',
+                    dataType: 'json',
+                    data: booking,
+                    success: function (data, textStatus, xhr) {
+                        alert("Booking Confirmed");
+                    },
+                    error: function (xhr, textStatus, error) {
+                        alert("Error");
+                        console.log(xhr.statusText);
+                        console.log(textStatus);
+                        console.log(error);
+                    }
+                });
+
+
+         
+               
+
+        
+                
+
+                
+
+            
+
+           
+
+        }
+     
+    }
+
+  
+    
+
+    function  search() 
+    {
+       
+        var search = document.getElementById('cname').value;
+
+        $.ajax({
+            url: '/Bookings/GetDatesBetween/ ',
+            type: 'GET',
+            dataType: 'JSON',
+            data: { name: search },
+            success: function (data, textStatus, xhr) {
+
+
+
+                
+                
+   
+                disabledDates = data.map(disabledDate => convertDate(new Date(Date.parse(disabledDate)))); // create a new array of strings from the data string
+                
+               
+
+                // (C) CREATE HTML TABLE
+                // (C1) HTML TABLE STRING
+                var myTable = "<table><tr>";
+
+                myTable += `<th>"Booked Dates"</th>`;
+
+                myTable +="</tr>"
+                myTable += "<tr>"
+
+                // (C2) LOOP THROUGH ARRAY & GENERATE ROWS-CELLS
+                var perrow = 1; // 2 CELLS PER ROW
+                disabledDates.forEach((value, i) => {
+                    // "NORMAL" CELL
+                    myTable += `<td>${value}</td>`;
+
+                    
+                    var next = i + 1;
+                    if (next % perrow == 0 && next != disabledDates.length) { myTable += "</tr><tr>"; }
+                });
+
+                // (C3) CLOSE THE TABLE STRING
+                myTable += "</tr></table>";
+
+                // (D) ATTACH HTML TO CONTAINER
+                document.getElementById("container").innerHTML = myTable;
+
+
+
+                return disabledDates;
+
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log(errorThrown);
+            }
+        });
+    }
+    
+    function convertDate(datetime) {
+        return datetime.getFullYear() + "-" + (datetime.getMonth() + 1) + "-" + datetime.getDate();
+    }
+
+
+    function getName(){
+       
+        var b = localStorage.getItem("myValue");
+        
+        document.getElementById('cname').value = b;
+        var resetValue = 0;
+        localStorage.setItem("myValue", resetValue);
+        
+        
+    }
+
+
+</script>
+
+
+
+
